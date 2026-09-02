@@ -3,1207 +3,185 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
     <title>PayFlow | Secure Checkout</title>
-
-    <!-- Razorpay Checkout -->
     <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --bg: #f7f8fa;
-            --card: #ffffff;
-            --text: #171717;
-            --muted: #737373;
-            --border: #e5e7eb;
-            --primary: #2563eb;
-            --primary-dark: #1d4ed8;
-            --success: #16a34a;
-            --danger: #dc2626;
-        }
-
-        body {
-            font-family:
-                Inter,
-                -apple-system,
-                BlinkMacSystemFont,
-                "Segoe UI",
-                sans-serif;
-
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-        }
-
-        /* =========================
-           HEADER
-        ========================= */
-
-        header {
-            height: 72px;
-            background: white;
-            border-bottom: 1px solid var(--border);
-
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-
-            padding: 0 6%;
-        }
-
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-
-            font-size: 20px;
-            font-weight: 700;
-        }
-
-        .logo-icon {
-            width: 34px;
-            height: 34px;
-
-            border-radius: 9px;
-
-            background: #111827;
-            color: white;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 16px;
-            font-weight: 700;
-        }
-
-        .secure-label {
-            font-size: 13px;
-            color: var(--muted);
-
-            display: flex;
-            align-items: center;
-            gap: 7px;
-        }
-
-        .secure-dot {
-            width: 8px;
-            height: 8px;
-
-            border-radius: 50%;
-            background: var(--success);
-        }
-
-        /* =========================
-           MAIN
-        ========================= */
-
-        main {
-            width: 100%;
-            max-width: 1100px;
-
-            margin: 50px auto;
-
-            padding: 0 24px;
-        }
-
-        .page-title {
-            margin-bottom: 30px;
-        }
-
-        .page-title h1 {
-            font-size: 30px;
-            letter-spacing: -0.7px;
-            margin-bottom: 7px;
-        }
-
-        .page-title p {
-            color: var(--muted);
-            font-size: 15px;
-        }
-
-        .checkout-grid {
-            display: grid;
-
-            grid-template-columns: 1.4fr 0.9fr;
-
-            gap: 24px;
-        }
-
-        /* =========================
-           CARD
-        ========================= */
-
-        .card {
-            background: var(--card);
-
-            border: 1px solid var(--border);
-            border-radius: 16px;
-
-            padding: 28px;
-
-            box-shadow:
-                0 2px 8px rgba(0, 0, 0, 0.03);
-        }
-
-        .card-title {
-            font-size: 17px;
-            font-weight: 650;
-
-            margin-bottom: 24px;
-        }
-
-        /* =========================
-           FORM
-        ========================= */
-
-        .form-group {
-            margin-bottom: 18px;
-        }
-
-        .form-group label {
-            display: block;
-
-            font-size: 13px;
-            font-weight: 600;
-
-            margin-bottom: 7px;
-        }
-
-        .form-group input {
-            width: 100%;
-
-            height: 46px;
-
-            padding: 0 13px;
-
-            border: 1px solid var(--border);
-            border-radius: 9px;
-
-            font-size: 14px;
-
-            outline: none;
-
-            transition: 0.2s;
-        }
-
-        .form-group input:focus {
-            border-color: var(--primary);
-
-            box-shadow:
-                0 0 0 3px rgba(37, 99, 235, 0.08);
-        }
-
-        .form-row {
-            display: grid;
-
-            grid-template-columns: 1fr 1fr;
-
-            gap: 14px;
-        }
-
-        /* =========================
-           ORDER SUMMARY
-        ========================= */
-
-        .product {
-            display: flex;
-
-            align-items: center;
-            justify-content: space-between;
-
-            padding-bottom: 22px;
-
-            border-bottom: 1px solid var(--border);
-
-            margin-bottom: 20px;
-        }
-
-        .product-left {
-            display: flex;
-            align-items: center;
-            gap: 13px;
-        }
-
-        .product-image {
-            width: 58px;
-            height: 58px;
-
-            border-radius: 10px;
-
-            background: #f1f5f9;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 24px;
-        }
-
-        .product-name {
-            font-size: 14px;
-            font-weight: 600;
-
-            margin-bottom: 4px;
-        }
-
-        .product-description {
-            font-size: 12px;
-            color: var(--muted);
-        }
-
-        .product-price {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .price-row {
-            display: flex;
-
-            justify-content: space-between;
-
-            font-size: 14px;
-
-            margin-bottom: 14px;
-        }
-
-        .price-row span:first-child {
-            color: var(--muted);
-        }
-
-        .total {
-            display: flex;
-
-            justify-content: space-between;
-
-            padding-top: 18px;
-
-            margin-top: 8px;
-
-            border-top: 1px solid var(--border);
-
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        /* =========================
-           PAY BUTTON
-        ========================= */
-
-        .pay-button {
-            width: 100%;
-
-            height: 52px;
-
-            border: none;
-            border-radius: 10px;
-
-            background: var(--primary);
-            color: white;
-
-            font-size: 15px;
-            font-weight: 650;
-
-            cursor: pointer;
-
-            margin-top: 24px;
-
-            transition:
-                background 0.2s,
-                transform 0.1s;
-        }
-
-        .pay-button:hover {
-            background: var(--primary-dark);
-        }
-
-        .pay-button:active {
-            transform: scale(0.99);
-        }
-
-        .pay-button:disabled {
-            opacity: 0.65;
-            cursor: not-allowed;
-        }
-
-        /* =========================
-           SECURITY
-        ========================= */
-
-        .security {
-            margin-top: 18px;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            gap: 7px;
-
-            color: var(--muted);
-
-            font-size: 12px;
-        }
-
-        /* =========================
-           RECOVERY INFO
-        ========================= */
-
-        .recovery-box {
-            margin-top: 24px;
-
-            padding: 15px;
-
-            border-radius: 10px;
-
-            background: #f8fafc;
-
-            border: 1px solid var(--border);
-        }
-
-        .recovery-header {
-            display: flex;
-
-            align-items: center;
-
-            gap: 8px;
-
-            margin-bottom: 7px;
-        }
-
-        .recovery-icon {
-            width: 24px;
-            height: 24px;
-
-            border-radius: 6px;
-
-            background: #111827;
-            color: white;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            font-size: 11px;
-            font-weight: 700;
-        }
-
-        .recovery-title {
-            font-size: 13px;
-            font-weight: 650;
-        }
-
-        .recovery-box p {
-            font-size: 12px;
-
-            color: var(--muted);
-
-            line-height: 1.5;
-        }
-
-        /* =========================
-           STATUS MODAL
-        ========================= */
-
-        .status-overlay {
-            position: fixed;
-
-            inset: 0;
-
-            background: rgba(0, 0, 0, 0.45);
-
-            display: none;
-
-            align-items: center;
-            justify-content: center;
-
-            padding: 20px;
-
-            z-index: 9999;
-        }
-
-        .status-overlay.show {
-            display: flex;
-        }
-
-        .status-card {
-            background: white;
-
-            width: 100%;
-            max-width: 420px;
-
-            border-radius: 18px;
-
-            padding: 32px;
-
-            text-align: center;
-        }
-
-        .status-icon {
-            width: 60px;
-            height: 60px;
-
-            border-radius: 50%;
-
-            display: flex;
-            align-items: center;
-            justify-content: center;
-
-            margin: 0 auto 18px;
-
-            font-size: 25px;
-        }
-
-        .status-icon.success {
-            background: #dcfce7;
-            color: var(--success);
-        }
-
-        .status-icon.failure {
-            background: #fee2e2;
-            color: var(--danger);
-        }
-
-        .status-card h2 {
-            font-size: 21px;
-
-            margin-bottom: 8px;
-        }
-
-        .status-card p {
-            color: var(--muted);
-
-            font-size: 14px;
-
-            line-height: 1.5;
-
-            margin-bottom: 20px;
-        }
-
-        .close-button {
-            width: 100%;
-
-            height: 44px;
-
-            border: none;
-
-            border-radius: 8px;
-
-            background: #111827;
-
-            color: white;
-
-            cursor: pointer;
-
-            font-weight: 600;
-        }
-
-        /* =========================
-           RESPONSIVE
-        ========================= */
-
-        @media (max-width: 800px) {
-
-            header {
-                padding: 0 20px;
-            }
-
-            main {
-                margin: 30px auto;
-            }
-
-            .checkout-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .page-title h1 {
-                font-size: 25px;
-            }
-
-        }
-
-        @media (max-width: 500px) {
-
-            .card {
-                padding: 20px;
-            }
-
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .secure-label {
-                display: none;
-            }
-
-        }
-
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
-    <!-- =========================
-         HEADER
-    ========================== -->
+<header>
+    <div class="logo">
+        <div class="logo-icon">P</div>
+        PayFlow
+    </div>
 
-    <header>
+    <div class="secure-label">
+        <span class="secure-dot"></span>
+        Secure checkout
+    </div>
+</header>
 
-        <div class="logo">
+<main>
 
-            <div class="logo-icon">
-                P
+    <div class="page-title">
+        <h1>Complete your payment</h1>
+        <p>Secure payment powered by Razorpay</p>
+    </div>
+
+    <div class="checkout-grid">
+
+        <div class="card">
+
+            <div class="card-title">
+                Customer details
             </div>
 
-            PayFlow
-
-        </div>
-
-        <div class="secure-label">
-
-            <span class="secure-dot"></span>
-
-            Secure checkout
-
-        </div>
-
-    </header>
-
-
-    <!-- =========================
-         MAIN
-    ========================== -->
-
-    <main>
-
-        <div class="page-title">
-
-            <h1>Complete your payment</h1>
-
-            <p>
-                Secure payment powered by Razorpay
-            </p>
-
-        </div>
-
-
-        <div class="checkout-grid">
-
-
-            <!-- =====================
-                 CUSTOMER DETAILS
-            ====================== -->
-
-            <div class="card">
-
-                <div class="card-title">
-                    Customer details
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="name">
-                        Full name
-                    </label>
-
-                    <input
-                        id="name"
-                        type="text"
-                        placeholder="John Doe"
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="email">
-                        Email address
-                    </label>
-
-                    <input
-                        id="email"
-                        type="email"
-                        placeholder="john@example.com"
-                    >
-
-                </div>
-
-
-                <div class="form-group">
-
-                    <label for="phone">
-                        Phone number
-                    </label>
-
-                    <input
-                        id="phone"
-                        type="tel"
-                        placeholder="+91 9876543210"
-                    >
-
-                </div>
-
-
-                <div class="recovery-box">
-
-                    <div class="recovery-header">
-
-                        <div class="recovery-icon">
-                            AI
-                        </div>
-
-                        <div class="recovery-title">
-                            Payment Recovery Protection
-                        </div>
-
-                    </div>
-
-                    <p>
-                        If your payment encounters a temporary problem,
-                        our recovery system can intelligently determine
-                        the best next step instead of simply abandoning
-                        the transaction.
-                    </p>
-
-                </div>
-
-            </div>
-
-
-
-            <!-- =====================
-                 ORDER SUMMARY
-            ====================== -->
-
-            <div class="card">
-
-                <div class="card-title">
-                    Order summary
-                </div>
-
-
-                <div class="product">
-
-                    <div class="product-left">
-
-                        <div class="product-image">
-                            📦
-                        </div>
-
-                        <div>
-
-                            <div class="product-name">
-                                Premium Product
-                            </div>
-
-                            <div class="product-description">
-                                Buildathon demo product
-                            </div>
-
-                        </div>
-
-                    </div>
-
-                    <div class="product-price">
-                        ₹500
-                    </div>
-
-                </div>
-
-
-                <div class="price-row">
-
-                    <span>
-                        Subtotal
-                    </span>
-
-                    <span>
-                        ₹500
-                    </span>
-
-                </div>
-
-
-                <div class="price-row">
-
-                    <span>
-                        Tax
-                    </span>
-
-                    <span>
-                        ₹0
-                    </span>
-
-                </div>
-
-
-                <div class="total">
-
-                    <span>
-                        Total
-                    </span>
-
-                    <span>
-                        ₹500
-                    </span>
-
-                </div>
-
-
-                <button
-                    id="payButton"
-                    class="pay-button"
-                    onclick="startPayment()"
+            <div class="form-group">
+                <label for="name">Full name</label>
+                <input
+                    id="name"
+                    type="text"
+                    placeholder="John Doe"
                 >
+            </div>
 
-                    Pay ₹500
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <input
+                    id="email"
+                    type="email"
+                    placeholder="john@example.com"
+                >
+            </div>
 
-                </button>
+            <div class="form-group">
+                <label for="phone">Phone number</label>
+                <input
+                    id="phone"
+                    type="tel"
+                    placeholder="+91 9876543210"
+                >
+            </div>
 
+            <div class="recovery-box">
 
-                <div class="security">
+                <div class="recovery-header">
+                    <div class="recovery-icon">AI</div>
 
-                    🔒 Secure payment via Razorpay
-
+                    <div class="recovery-title">
+                        Payment Recovery Protection
+                    </div>
                 </div>
+
+                <p>
+                    If your payment encounters a temporary problem,
+                    our recovery system can intelligently determine
+                    the best next step instead of simply abandoning
+                    the transaction.
+                </p>
 
             </div>
 
         </div>
 
-    </main>
+        <div class="card">
 
-
-
-    <!-- =========================
-         STATUS MODAL
-    ========================== -->
-
-    <div
-        id="statusOverlay"
-        class="status-overlay"
-    >
-
-        <div class="status-card">
-
-            <div
-                id="statusIcon"
-                class="status-icon"
-            >
+            <div class="card-title">
+                Order summary
             </div>
 
-            <h2 id="statusTitle">
-                Payment status
-            </h2>
+            <div class="product">
 
-            <p id="statusMessage">
-                Payment status
-            </p>
+                <div class="product-left">
+
+                    <div class="product-image">
+                        📦
+                    </div>
+
+                    <div>
+                        <div class="product-name">
+                            Premium Product
+                        </div>
+
+                        <div class="product-description">
+                            Buildathon demo product
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="product-price">
+                    ₹500
+                </div>
+
+            </div>
+
+            <div class="price-row">
+                <span>Subtotal</span>
+                <span>₹500</span>
+            </div>
+
+            <div class="price-row">
+                <span>Tax</span>
+                <span>₹0</span>
+            </div>
+
+            <div class="total">
+                <span>Total</span>
+                <span>₹500</span>
+            </div>
 
             <button
-                class="close-button"
-                onclick="closeStatus()"
+                id="payButton"
+                class="pay-button"
+                onclick="startPayment()"
             >
-                Close
+                Pay ₹500
             </button>
+
+            <div class="security">
+                🔒 Secure payment via Razorpay
+            </div>
 
         </div>
 
     </div>
 
+</main>
 
+<div
+    id="statusOverlay"
+    class="status-overlay"
+>
 
-    <!-- =========================
-         JAVASCRIPT
-    ========================== -->
+    <div class="status-card">
 
-    <script>
+        <div
+            id="statusIcon"
+            class="status-icon"
+        ></div>
 
-        /*
-         * IMPORTANT
-         *
-         * Replace this with your actual
-         * Razorpay TEST Key ID.
-         *
-         * NEVER put your Razorpay Key Secret here.
-         */
+        <h2 id="statusTitle">
+            Payment status
+        </h2>
 
-        const RAZORPAY_KEY_ID = "rzp_test_TWZ4T6BykEuzlu";
+        <p id="statusMessage">
+            Payment status
+        </p>
 
+        <button
+            class="close-button"
+            onclick="closeStatus()"
+        >
+            Close
+        </button>
 
-        /*
-         * Your FastAPI backend.
-         *
-         * Backend endpoint:
-         *
-         * POST /create-order
-         *
-         */
+    </div>
 
-        const BACKEND_URL = "http://127.0.0.1:8000";
+</div>
 
-
-        async function startPayment() {
-
-            const name =
-                document.getElementById("name").value.trim();
-
-            const email =
-                document.getElementById("email").value.trim();
-
-            const phone =
-                document.getElementById("phone").value.trim();
-
-
-            /*
-             * Basic validation
-             */
-
-            if (!name) {
-
-                alert("Please enter your name.");
-
-                return;
-            }
-
-
-            if (!email) {
-
-                alert("Please enter your email.");
-
-                return;
-            }
-
-
-            if (!phone) {
-
-                alert("Please enter your phone number.");
-
-                return;
-            }
-
-
-            const button =
-                document.getElementById("payButton");
-
-
-            button.disabled = true;
-
-            button.innerText =
-                "Creating secure order...";
-
-
-            try {
-
-                /*
-                 * Ask your backend to create
-                 * a Razorpay order.
-                 */
-
-                const response =
-                    await fetch(
-                        `${BACKEND_URL}/create-order`,
-                        {
-                            method: "POST",
-
-                            headers: {
-                                "Content-Type":
-                                    "application/json"
-                            },
-
-                            body: JSON.stringify({
-
-                                name: name,
-
-                                email: email,
-
-                                phone: phone
-
-                            })
-
-                        }
-                    );
-
-
-                if (!response.ok) {
-
-                    throw new Error(
-                        "Could not create Razorpay order."
-                    );
-
-                }
-
-
-                const order =
-                    await response.json();
-
-
-                /*
-                 * Razorpay Checkout configuration
-                 */
-
-                const options = {
-
-                    key: RAZORPAY_KEY_ID,
-
-                    amount: order.amount,
-
-                    currency: order.currency,
-
-                    name: "PayFlow",
-
-                    description:
-                        "Payment Recovery Agent Demo",
-
-                    order_id: order.id,
-
-
-                    prefill: {
-
-                        name: name,
-
-                        email: email,
-
-                        contact: phone
-
-                    },
-
-
-                    theme: {
-
-                        color: "#2563eb"
-
-                    },
-
-
-                    /*
-                     * Called after successful
-                     * checkout completion.
-                     */
-
-                    handler:
-                        function (response) {
-
-                            console.log(
-                                "Payment successful:",
-                                response
-                            );
-
-
-                            showStatus(
-
-                                "success",
-
-                                "Payment successful",
-
-                                "Your payment was completed successfully. Payment ID: "
-                                + response.razorpay_payment_id
-
-                            );
-
-                        },
-
-
-                    modal: {
-
-                        ondismiss:
-                            function () {
-
-                                resetButton();
-
-                            }
-
-                    }
-
-                };
-
-
-                /*
-                 * Create Razorpay Checkout
-                 */
-
-                const razorpay =
-                    new Razorpay(options);
-
-
-                /*
-                 * Razorpay checkout error
-                 */
-
-                razorpay.on(
-                    "payment.failed",
-                    function (response) {
-
-                        console.log(
-                            "Payment failed:",
-                            response.error
-                        );
-
-
-                        /*
-                         * IMPORTANT:
-                         *
-                         * This is only frontend
-                         * handling.
-                         *
-                         * Your REAL recovery agent
-                         * will receive the failure
-                         * through Razorpay webhook.
-                         */
-
-                        showStatus(
-
-                            "failure",
-
-                            "Payment failed",
-
-                            response.error.description
-                            ||
-                            "The payment could not be completed."
-
-                        );
-
-
-                        resetButton();
-
-                    }
-                );
-
-
-                razorpay.open();
-
-
-                resetButton();
-
-            }
-
-            catch (error) {
-
-                console.error(error);
-
-
-                showStatus(
-
-                    "failure",
-
-                    "Something went wrong",
-
-                    error.message
-
-                );
-
-
-                resetButton();
-
-            }
-
-        }
-
-
-
-        /*
-         * Reset payment button
-         */
-
-        function resetButton() {
-
-            const button =
-                document.getElementById("payButton");
-
-
-            button.disabled = false;
-
-            button.innerText =
-                "Pay ₹500";
-
-        }
-
-
-
-        /*
-         * Show payment status
-         */
-
-        function showStatus(
-            type,
-            title,
-            message
-        ) {
-
-            const overlay =
-                document.getElementById(
-                    "statusOverlay"
-                );
-
-
-            const icon =
-                document.getElementById(
-                    "statusIcon"
-                );
-
-
-            const titleElement =
-                document.getElementById(
-                    "statusTitle"
-                );
-
-
-            const messageElement =
-                document.getElementById(
-                    "statusMessage"
-                );
-
-
-            icon.className =
-                "status-icon " + type;
-
-
-            if (type === "success") {
-
-                icon.innerText = "✓";
-
-            } else {
-
-                icon.innerText = "×";
-
-            }
-
-
-            titleElement.innerText =
-                title;
-
-
-            messageElement.innerText =
-                message;
-
-
-            overlay.classList.add("show");
-
-        }
-
-
-
-        /*
-         * Close status modal
-         */
-
-        function closeStatus() {
-
-            document
-                .getElementById("statusOverlay")
-                .classList
-                .remove("show");
-
-        }
-
-    </script>
+<script src="script.js"></script>
 
 </body>
 </html>

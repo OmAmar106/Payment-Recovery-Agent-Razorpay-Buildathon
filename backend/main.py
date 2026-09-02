@@ -1,8 +1,9 @@
 import os
 import razorpay
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Request, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+import payments.payment as payment
 
 load_dotenv()
 
@@ -26,14 +27,62 @@ client = razorpay.Client(
     )
 )
 
+connections = {}
+
+@app.websocket("/ws/{order_id}")
+async def websocket_endpoint(
+    websocket: WebSocket,
+    order_id: str
+):
+    await websocket.accept()
+    connections[order_id] = websocket
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        connections.pop(order_id, None)
 
 @app.post("/create-order")
 def create_order():
-
     order = client.order.create({
         "amount": 50000,
         "currency": "INR",
         "receipt": "receipt_001"
     })
-
     return order
+
+WEBHOOK_SECRET = os.getenv("RAZORPAY_WEBHOOK_SECRET")
+
+@app.post("/webhook/razorpay")
+async def razorpay_webhook(request: Request):
+
+    body = await request.body()
+    signature = request.headers.get(
+        "X-Razorpay-Signature"
+    )
+
+    if not signature:
+        raise HTTPException(
+            status_code=400,
+            detail="Missing Razorpay signature"
+        )
+
+    try:
+
+        client.utility.verify_webhook_signature(
+            body.decode("utf-8"),
+            signature,
+            WEBHOOK_SECRET
+        )
+
+    except Exception:
+
+        raise HTTPException(
+            status_code=400,
+            detail="Invalid webhook signature"
+        )
+
+    data = await request.json()
+    payment.process_payment(data)
+
+    return {"status": "ok"}
