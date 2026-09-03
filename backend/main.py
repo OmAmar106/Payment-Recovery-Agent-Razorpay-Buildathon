@@ -4,7 +4,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 import payments.payment as payment
-from mail.init import send_mail
+from mail.send_mail import send_mail
 
 load_dotenv()
 
