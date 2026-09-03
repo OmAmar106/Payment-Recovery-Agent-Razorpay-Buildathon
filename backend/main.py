@@ -42,6 +42,12 @@ async def websocket_endpoint(
     except WebSocketDisconnect:
         connections.pop(order_id, None)
 
+async def send_to_client(order_id, data):
+    websocket = connections.get(order_id)
+
+    if websocket:
+        await websocket.send_json(data)
+
 @app.post("/create-order")
 def create_order():
     order = client.order.create({
@@ -68,21 +74,27 @@ async def razorpay_webhook(request: Request):
         )
 
     try:
-
         client.utility.verify_webhook_signature(
             body.decode("utf-8"),
             signature,
             WEBHOOK_SECRET
         )
-
     except Exception:
-
         raise HTTPException(
             status_code=400,
             detail="Invalid webhook signature"
         )
 
     data = await request.json()
-    payment.process_payment(data)
+
+    order_id, result = payment.process_payment(data)
+
+    if result.get("action"):
+        # print(result)
+        if result['action']=='email':
+            # del = result['delay']
+            pass
+        else:   
+            await send_to_client(order_id, result)
 
     return {"status": "ok"}

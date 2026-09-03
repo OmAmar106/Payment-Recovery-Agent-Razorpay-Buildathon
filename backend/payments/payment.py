@@ -1,4 +1,5 @@
 from payments.db import save_payment, get_payments_by_order, save_event
+from agent.init import solution
 
 def process_payment(data):
     event = data.get("event")
@@ -41,18 +42,18 @@ def process_payment(data):
     existing_payments = get_payments_by_order(order_id)
 
     if event == "payment.failed":
-        return process_failed_payment(
+        return order_id,process_failed_payment(
             payment=payment,
             existing_payments=existing_payments
         )
 
     if event == "payment.captured":
-        return process_captured_payment(
+        return order_id,process_captured_payment(
             payment=payment,
             existing_payments=existing_payments
         )
 
-    return
+    return order_id,''
 
 def process_failed_payment(
     payment,
@@ -101,7 +102,7 @@ def process_failed_payment(
 
     save_payment(payment_data)
 
-    return {
+    result = {
         "success": True,
         "event": "payment.failed",
         "payment_id": payment_id,
@@ -109,6 +110,12 @@ def process_failed_payment(
         "status": "failed",
         "recovered": False
     }
+    d = solution(result,existing_payments)
+
+    for x in d:
+        result[x] = d[x]
+
+    return result
 
 def process_captured_payment(
     payment,
@@ -168,54 +175,6 @@ def process_captured_payment(
         "status": "captured",
         "recovered": recovered,
         "previous_failures": len(failed_payments)
-    }
-
-def process_other_payment(
-    payment,
-    existing_payments
-):
-    failed_payments = [
-        p for p in existing_payments
-        if p.status == "failed"
-    ]
-
-    payment_data = {
-        "payment_id": payment["id"],
-        "order_id": payment.get("order_id"),
-        "amount": payment.get("amount"),
-        "currency": payment.get("currency"),
-        "status": payment.get("status"),
-        "method": payment.get("method"),
-        "email": payment.get("email"),
-        "contact": payment.get("contact"),
-        "bank": payment.get("bank"),
-        "wallet": payment.get("wallet"),
-        "vpa": payment.get("vpa"),
-        "error_code": payment.get("error_code"),
-        "error_description": payment.get("error_description"),
-        "error_source": payment.get("error_source"),
-        "error_step": payment.get("error_step"),
-        "error_reason": payment.get("error_reason"),
-        "created_at": payment.get("created_at"),
-        "first_failed_at": (
-            failed_payments[0].first_failed_at
-            if failed_payments
-            else None
-        ),
-        "failure_count": len(failed_payments),
-        "was_recovered": int(
-            any(p.was_recovered for p in existing_payments)
-        ),
-        "raw_data": payment
-    }
-
-    save_payment(payment_data)
-
-    return {
-        "success": True,
-        "event": "other",
-        "payment_id": payment["id"],
-        "status": payment.get("status")
     }
 
 

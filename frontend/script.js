@@ -62,27 +62,23 @@ function handleRecoveryAction(data) {
     const action = data.action;
 
     if (action === "RETRY") {
-        const delay =
-            Number(data.delay || 10);
+        showRecoveryPopup(
+            data.message || "Please try once again."
+        );
 
-        if (retryCount >= maxRetries) {
-            showStatus(
-                "failure",
-                "Payment could not be recovered",
-                "We tried the available recovery options. Please try again manually."
-            );
+        setTimeout(function () {
+            startPayment(true);
+        }, 1000);
 
-            resetButton();
+        return;
+    }
 
-            return;
-        }
+    if (action === "WAIT_AND_RETRY") {
+        const delay = Number(data.delay || 10);
 
-        retryCount++;
-
-        showStatus(
-            "failure",
-            "Recovering your payment",
-            `We'll retry your payment in ${delay} seconds.`
+        showRecoveryPopup(
+            data.message ||
+            `Retrying again in ${delay} seconds.`
         );
 
         setTimeout(function () {
@@ -92,25 +88,17 @@ function handleRecoveryAction(data) {
         return;
     }
 
-    if (action === "WAIT") {
-        const delay =
-            Number(data.delay || 10);
-
-        showStatus(
-            "failure",
-            "Payment recovery in progress",
-            `We're waiting ${delay} seconds before trying the next step.`
+    if (action === "SHOW_MESSAGE") {
+        showRecoveryPopup(
+            data.message ||
+            "There was an issue with your payment."
         );
 
-        return;
-    }
-
-    if (action === "SEND_MESSAGE") {
         showStatus(
             "failure",
-            "Payment issue detected",
+            "Payment issue",
             data.message ||
-            "We've sent you instructions to complete your payment."
+            "There was an issue with your payment."
         );
 
         resetButton();
@@ -118,24 +106,12 @@ function handleRecoveryAction(data) {
         return;
     }
 
-    if (action === "PAYMENT_LINK") {
-        showStatus(
-            "failure",
-            "New payment link generated",
+    if (action === "HUMAN_ESCALATION") {
+        showRecoveryPopup(
             data.message ||
-            "We've generated a new payment link for you."
+            "Human agent has been notified about the error."
         );
 
-        if (data.url) {
-            setTimeout(function () {
-                window.location.href = data.url;
-            }, 1500);
-        }
-
-        return;
-    }
-
-    if (action === "HUMAN") {
         showStatus(
             "failure",
             "Support agent notified",
@@ -397,4 +373,19 @@ function closeStatus() {
         .getElementById("statusOverlay")
         .classList
         .remove("show");
+}
+
+function showRecoveryPopup(message) {
+    const popup =
+        document.getElementById(
+            "recoveryPopup"
+        );
+
+    popup.innerText = message;
+
+    popup.classList.add("show");
+
+    setTimeout(function () {
+        popup.classList.remove("show");
+    }, 5000);
 }
