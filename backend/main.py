@@ -4,6 +4,7 @@ from dotenv import load_dotenv
 from fastapi import FastAPI, Request, HTTPException, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 import payments.payment as payment
+from mail.init import send_mail
 
 load_dotenv()
 
@@ -91,9 +92,10 @@ async def razorpay_webhook(request: Request):
 
     if result.get("action"):
         # print(result)
-        if result['action']=='email':
+        if result['action']=='EMAIL':
             # del = result['delay']
-            pass
+            try:send_mail(data,result)
+            except:pass
         else:   
             await send_to_client(order_id, result)
 

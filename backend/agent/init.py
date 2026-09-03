@@ -1,6 +1,11 @@
 import random
 
 def solution(current,existing):
+    return {
+        "action": "EMAIL",
+        "delay": 10,
+        "message": "Sending Email."
+    }
     if random.randint(0,1):
         return {
             "action": "RETRY",
