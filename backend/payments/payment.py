@@ -1,5 +1,7 @@
-from payments.db import save_payment, get_payments_by_order, save_event
+from payments.db import save_payment, get_payments_by_order, save_event, db, Payment
 from agent.init import solution
+import json
+from sqlalchemy.inspection import inspect
 
 def process_payment(data):
     event = data.get("event")
@@ -21,6 +23,8 @@ def process_payment(data):
         }
 
     payment_id = payment.get("id")
+
+
     order_id = payment.get("order_id")
 
     if not payment_id:
@@ -28,6 +32,12 @@ def process_payment(data):
             "success": False,
             "reason": "missing_payment_id"
         }
+    existing = db.query(Payment).filter(
+        Payment.payment_id == payment_id
+    ).first()
+
+    if existing:
+        return existing.order_id,''
 
     event_created_at = data.get("created_at")
 
@@ -110,7 +120,19 @@ def process_failed_payment(
         "status": "failed",
         "recovered": False
     }
-    d = solution(result,existing_payments)
+    # d = solution(result,[
+    #     str({
+    #         column.key: getattr(p, column.key)
+    #         for column in inspect(p).mapper.column_attrs
+    #     })
+    #     for p in failed_payments
+    # ])
+    d = """{
+        "action": "EMAIL",
+        "delay": 0,
+        "message": "Your bank declined the netbanking payment. Please try an alternative payment method."
+    }"""
+    d = json.loads(d)
 
     for x in d:
         result[x] = d[x]
@@ -162,7 +184,7 @@ def process_captured_payment(
     save_payment(payment_data)
 
     if recovered:
-        update_ml_model(
+        completed(
             previous_failures=failed_payments,
             successful_payment=payment
         )
@@ -178,11 +200,10 @@ def process_captured_payment(
     }
 
 
-def update_ml_model(
+def completed(
     previous_failures,
     successful_payment
 ):
-    print("ML UPDATE")
     print(
         "Successful payment:",
         successful_payment.get("id")

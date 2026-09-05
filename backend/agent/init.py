@@ -1,20 +1,14 @@
 import random
+from agent.agent_call import ag_call
+from model.bayesian_model import predict
 
 def solution(current,existing):
-    return {
-        "action": "EMAIL",
-        "delay": 10,
-        "message": "Sending Email."
-    }
-    if random.randint(0,1):
-        return {
-            "action": "RETRY",
-            "delay": 10,
-            "message": "Please retry your payment in 10 seconds."
-        }
-    else:
-        return {
-                "action": "WAIT_AND_RETRY",
-                "delay": 10,
-                "message": "1"
-            }
+    text = str(current)+'\n'+str(existing)
+    probablity = predict(current)
+    # return {}
+    print(probablity)
+
+    ans = ag_call(text+'\nProbablity of fixing:'+'\n'+str(probablity))
+
+    print(ans)
+    return ans
