@@ -10,6 +10,8 @@ It listens to Razorpay payment events through webhooks, analyzes the failure con
 
 ## Design
 
+<img width="4777" height="2786" alt="System-Design-Payment-Recovery-Agent" src="https://github.com/user-attachments/assets/5a82cd83-17d6-40e9-a056-5ccf40c85690" />
+
 ## Problem
 
 Payment failures are common, but most payment flows handle them poorly.
