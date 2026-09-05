@@ -120,18 +120,14 @@ def process_failed_payment(
         "status": "failed",
         "recovered": False
     }
-    # d = solution(result,[
-    #     str({
-    #         column.key: getattr(p, column.key)
-    #         for column in inspect(p).mapper.column_attrs
-    #     })
-    #     for p in failed_payments
-    # ])
-    d = """{
-        "action": "EMAIL",
-        "delay": 0,
-        "message": "Your bank declined the netbanking payment. Please try an alternative payment method."
-    }"""
+    d = solution(result,[
+        str({
+            column.key: getattr(p, column.key)
+            for column in inspect(p).mapper.column_attrs
+        })
+        for p in failed_payments
+    ])
+
     d = json.loads(d)
 
     for x in d:

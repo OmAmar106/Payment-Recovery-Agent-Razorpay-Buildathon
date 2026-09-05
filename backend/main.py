@@ -91,7 +91,6 @@ async def razorpay_webhook(request: Request):
     order_id, result = payment.process_payment(data)
 
     if result and result.get("action"):
-        # print(result)
         if result['action']=='EMAIL':
             # del = result['delay']
             try:send_mail(data,result)
